@@ -40,12 +40,33 @@ export function About() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex h-full"
+            className="flex h-full w-full"
           >
-            <div className="p-6 w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm flex flex-col justify-center items-center text-center">
-              <Rocket className="text-blue-600 dark:text-blue-400 mb-4" size={48} />
-              <h3 className="text-xl font-bold mb-3 text-zinc-900 dark:text-zinc-50">Tools & DevOps</h3>
-              <p className="text-base">Git, Vercel, Lovable, Antigravity</p>
+            <div className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm flex flex-col overflow-hidden text-sm md:text-base">
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 border-b border-zinc-200 dark:border-zinc-800 gap-2 sm:gap-4">
+                <span className="text-zinc-500 dark:text-zinc-400 font-medium tracking-wider text-xs uppercase">Studying</span>
+                <span className="text-zinc-900 dark:text-zinc-100 font-medium sm:text-right">B.Tech CSE (Software Engineering)</span>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 border-b border-zinc-200 dark:border-zinc-800 gap-2 sm:gap-4">
+                <span className="text-zinc-500 dark:text-zinc-400 font-medium tracking-wider text-xs uppercase">Institute</span>
+                <div className="flex flex-col sm:text-right">
+                  <span className="text-zinc-900 dark:text-zinc-100 font-medium">S.R.M Institute of Science and Technology</span>
+                  <span className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Kattankulathur, Chennai</span>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 border-b border-zinc-200 dark:border-zinc-800 gap-2 sm:gap-4">
+                <span className="text-zinc-500 dark:text-zinc-400 font-medium tracking-wider text-xs uppercase">Graduating</span>
+                <span className="text-zinc-900 dark:text-zinc-100 font-medium sm:text-right">2030</span>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 gap-2 sm:gap-4">
+                <span className="text-zinc-500 dark:text-zinc-400 font-medium tracking-wider text-xs uppercase">Direction</span>
+                <span className="text-zinc-900 dark:text-zinc-100 font-medium sm:text-right">Product Developer</span>
+              </div>
+              
             </div>
           </motion.div>
         </div>
