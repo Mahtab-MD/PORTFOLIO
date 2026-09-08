@@ -1,0 +1,6 @@
+{
+  "name": "Mahtab Mohammad Portfolio",
+  "description": "A clean, responsive portfolio website featuring a dark mode toggle and smooth page transitions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
