@@ -15,7 +15,14 @@ export function Hero() {
             Welcome to my portfolio
           </h2>
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
-            Hi, I'm <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Mahtab Mohammad</span>
+            Hello, I'm <motion.span 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
+            >
+              Mahtab Mohammad
+            </motion.span>
           </h1>
           <p className="text-xl md:text-2xl text-zinc-600 dark:text-zinc-400 mb-10 max-w-lg mx-auto md:mx-0">
             Software Engineer passionate about building clean, interactive, and scalable digital experiences.

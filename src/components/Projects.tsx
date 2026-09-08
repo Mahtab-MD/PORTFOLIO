@@ -3,26 +3,12 @@ import { ExternalLink, Github } from 'lucide-react';
 
 const projects = [
   {
-    title: 'E-Commerce Platform',
-    description: 'A full-stack e-commerce solution with real-time inventory management and secure payment processing.',
-    tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind'],
+    title: 'Assembli',
+    description: 'A complete frontend and backend solution built using Google AI Studio and AntiGravity, deployed seamlessly via Vercel.',
+    tech: ['Google AI Studio', 'AntiGravity', 'Vercel'],
     github: 'https://github.com/Mahtab-MD',
-    link: '#',
-  },
-  {
-    title: 'Task Management App',
-    description: 'Collaborative task management tool featuring real-time updates, drag-and-drop boards, and team roles.',
-    tech: ['TypeScript', 'Next.js', 'Firebase', 'Framer Motion'],
-    github: 'https://github.com/Mahtab-MD',
-    link: '#',
-  },
-  {
-    title: 'AI Content Generator',
-    description: 'An AI-powered application that generates marketing copy and blog posts using advanced language models.',
-    tech: ['React', 'OpenAI API', 'Tailwind', 'Vite'],
-    github: 'https://github.com/Mahtab-MD',
-    link: '#',
-  },
+    link: 'https://assembli-md.vercel.app/',
+  }
 ];
 
 export function Projects() {
@@ -52,7 +38,9 @@ export function Projects() {
             >
               <div className="flex justify-between items-start mb-6">
                 <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                  <ExternalLink size={24} />
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
+                    <ExternalLink size={24} />
+                  </a>
                 </div>
                 <div className="flex gap-3">
                   <a href={project.github} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">

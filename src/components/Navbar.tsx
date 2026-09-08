@@ -25,7 +25,7 @@ export function Navbar() {
     >
       <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
         <a href="#home" className="text-xl font-bold tracking-tight">
-          MAHTAB<span className="text-blue-600 dark:text-blue-400">.EXE</span>
+          MAHTAB<span className="text-blue-600 dark:text-blue-400">.exe</span>
         </a>
         
         <nav className="hidden md:flex items-center gap-8">

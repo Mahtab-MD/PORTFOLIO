@@ -40,22 +40,12 @@ export function About() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+            className="flex h-full"
           >
-            <div className="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm">
-              <Laptop className="text-blue-600 dark:text-blue-400 mb-4" size={32} />
-              <h3 className="font-bold mb-2 text-zinc-900 dark:text-zinc-50">Frontend</h3>
-              <p className="text-sm">React, Next.js, Tailwind CSS, TypeScript</p>
-            </div>
-            <div className="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm">
-              <Code2 className="text-blue-600 dark:text-blue-400 mb-4" size={32} />
-              <h3 className="font-bold mb-2 text-zinc-900 dark:text-zinc-50">Backend</h3>
-              <p className="text-sm">Node.js, Express, PostgreSQL, Firebase</p>
-            </div>
-            <div className="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm sm:col-span-2 flex flex-col items-center text-center">
-              <Rocket className="text-blue-600 dark:text-blue-400 mb-4" size={32} />
-              <h3 className="font-bold mb-2 text-zinc-900 dark:text-zinc-50">Tools & DevOps</h3>
-              <p className="text-sm">Git, Docker, Vercel, AWS</p>
+            <div className="p-6 w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm flex flex-col justify-center items-center text-center">
+              <Rocket className="text-blue-600 dark:text-blue-400 mb-4" size={48} />
+              <h3 className="text-xl font-bold mb-3 text-zinc-900 dark:text-zinc-50">Tools & DevOps</h3>
+              <p className="text-base">Git, Vercel, Lovable, Antigravity</p>
             </div>
           </motion.div>
         </div>
@@ -77,8 +67,8 @@ export function About() {
               <span className="font-medium text-zinc-900 dark:text-zinc-100">Traveling</span>
             </div>
             <div className="flex flex-col items-center justify-center p-6 bg-zinc-50 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
-              <BookOpen className="text-zinc-700 dark:text-zinc-300 mb-3" size={28} />
-              <span className="font-medium text-zinc-900 dark:text-zinc-100">Reading</span>
+              <Laptop className="text-zinc-700 dark:text-zinc-300 mb-3" size={28} />
+              <span className="font-medium text-zinc-900 dark:text-zinc-100">Gaming</span>
             </div>
             <div className="flex flex-col items-center justify-center p-6 bg-zinc-50 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
               <Coffee className="text-zinc-700 dark:text-zinc-300 mb-3" size={28} />
