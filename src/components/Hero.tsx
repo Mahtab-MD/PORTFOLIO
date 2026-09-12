@@ -1,89 +1,137 @@
-import { motion } from 'motion/react';
-import { Github, Linkedin, ArrowRight } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { motion, useScroll, useMotionValueEvent, useTransform } from 'motion/react';
+import { ChevronDown } from 'lucide-react';
+import { HeroVideo } from './HeroVideo';
+import { HeroTypography } from './HeroTypography';
 
 export function Hero() {
-  return (
-    <section id="home" className="min-h-screen flex items-center justify-center pt-20 pb-12 px-6">
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center md:text-left"
-        >
-          <h2 className="text-sm font-semibold tracking-wide text-blue-600 dark:text-blue-400 uppercase mb-4">
-            Welcome to my portfolio
-          </h2>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
-            Hello, I'm <motion.span 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
-            >
-              Mahtab Mohammad
-            </motion.span>
-          </h1>
-          <p className="text-xl md:text-2xl text-zinc-600 dark:text-zinc-400 mb-10 max-w-lg mx-auto md:mx-0">
-            Software Engineer passionate about building clean, interactive, and scalable digital experiences.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
-            <a
-              href="https://mail.google.com/mail/?view=cm&fs=1&to=mohammad.mahtab1114@gmail.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 rounded-full font-medium hover:scale-105 transition-transform shadow-lg"
-            >
-              Get in touch
-              <ArrowRight size={18} />
-            </a>
-            <div className="flex items-center gap-4">
-              <a
-                href="https://github.com/Mahtab-MD"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-50 transition-all hover:scale-110 shadow-sm"
-                aria-label="GitHub Profile"
-              >
-                <Github size={24} />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/mahtab-mohammad-547831413/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-[#0A66C2] dark:hover:text-[#4294ff] transition-all hover:scale-110 shadow-sm"
-                aria-label="LinkedIn Profile"
-              >
-                <Linkedin size={24} />
-              </a>
-            </div>
-          </div>
-        </motion.div>
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [currentStage, setCurrentStage] = useState(1);
 
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex justify-center"
-        >
-          <div className="relative w-72 h-72 md:w-96 md:h-96">
-            <div className="absolute inset-0 bg-blue-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-            <motion.img 
-              whileHover={{ scale: 1.05, rotate: 2 }}
-              whileTap={{ scale: 0.95, rotate: -2 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              src="/assets/profile.png" 
-              alt="Mahtab Mohammad" 
-              className="relative w-full h-full object-cover rounded-full border-2 border-zinc-900 dark:border-white shadow-[0_0_20px_rgba(37,99,235,0.5)] dark:shadow-[0_0_30px_rgba(96,165,250,0.7)] ring-4 ring-blue-500/30 dark:ring-blue-400/40 z-10 cursor-pointer hover:shadow-[0_0_40px_rgba(37,99,235,0.8)] dark:hover:shadow-[0_0_50px_rgba(96,165,250,0.9)] hover:ring-blue-500/50 dark:hover:ring-blue-400/60 transition-shadow duration-300"
-              onError={(e) => {
-                e.currentTarget.src = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop";
-              }}
-            />
+  // Measure scroll progress through the tall hero sequence (0.0 -> 1.0)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
+  });
+
+  // Track active narrative stage for subtle chapter markers
+  useMotionValueEvent(scrollYProgress, 'change', (progress) => {
+    if (progress < 0.22) {
+      setCurrentStage(1);
+    } else if (progress < 0.48) {
+      setCurrentStage(2);
+    } else if (progress < 0.74) {
+      setCurrentStage(3);
+    } else {
+      setCurrentStage(4);
+    }
+  });
+
+  // Scroll hint fades out smoothly once user scrolls down slightly
+  const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0]);
+
+  // Bottom scroll progress line (0% to 100%)
+  const progressBarWidth = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+
+  return (
+    <section
+      id="home"
+      ref={containerRef}
+      className="relative w-full min-h-[400vh] bg-zinc-950 text-white select-none"
+    >
+      {/* ─────────────────────────────────────────────────────────────
+          STICKY FULLSCREEN VIEWPORT
+          Remains fixed in place while user scrolls through the 4 stages
+          ───────────────────────────────────────────────────────────── */}
+      <div className="sticky top-0 h-screen h-[100dvh] w-full overflow-hidden flex flex-col justify-between pt-24 pb-8 px-6 sm:px-10 lg:px-16">
+        
+        {/* Fullscreen Cinematic Background Video */}
+        <HeroVideo scrollYProgress={scrollYProgress} />
+
+        {/* ─────────────────────────────────────────────────────────────
+            TOP HEADER / STAGE TRACKER (MINIMAL)
+            ───────────────────────────────────────────────────────────── */}
+        <div className="w-full max-w-7xl mx-auto flex items-center justify-between text-xs font-mono text-zinc-400 select-none z-20 pt-2">
+          <div className="flex items-center gap-3">
+            <span className="text-zinc-200 font-semibold tracking-wider">MAHTAB</span>
+            <span className="text-zinc-600">/</span>
+            <span className="text-blue-400 font-medium">
+              {currentStage === 1 && 'INTRODUCTION'}
+              {currentStage === 2 && 'DISCIPLINE'}
+              {currentStage === 3 && 'PHILOSOPHY'}
+              {currentStage === 4 && 'PORTFOLIO'}
+            </span>
           </div>
-        </motion.div>
+
+          <div className="flex items-center gap-1.5">
+            {[1, 2, 3, 4].map((stageNum) => (
+              <div
+                key={stageNum}
+                className={`h-1 rounded-full transition-all duration-300 ${
+                  currentStage === stageNum
+                    ? 'w-6 bg-blue-500'
+                    : 'w-1.5 bg-zinc-700'
+                }`}
+                aria-label={`Stage ${stageNum}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────
+            MAIN STAGE LAYOUT
+            Left 40-45% for typography. Right side showcases the video.
+            ───────────────────────────────────────────────────────────── */}
+        <div className="w-full max-w-7xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 items-center z-20">
+          <div className="lg:col-span-6 xl:col-span-5 flex flex-col justify-center">
+            <HeroTypography scrollYProgress={scrollYProgress} />
+          </div>
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────
+            BOTTOM FOOTER / MINIMAL CONTROLS
+            ───────────────────────────────────────────────────────────── */}
+        <div className="w-full max-w-7xl mx-auto flex items-end justify-between text-xs font-mono text-zinc-400 select-none z-20 pb-2">
+          
+          {/* Scroll prompt (fades out quickly) */}
+          <motion.div
+            style={{ opacity: scrollHintOpacity }}
+            className="flex items-center gap-2.5 text-zinc-400"
+          >
+            <div className="w-4 h-7 rounded-full border border-zinc-600 flex items-start justify-center p-1">
+              <div className="w-1 h-1.5 rounded-full bg-blue-400 animate-bounce" />
+            </div>
+            <span className="tracking-widest uppercase text-[11px] font-medium text-zinc-300">
+              Scroll to scrub cinematic intro
+            </span>
+          </motion.div>
+
+          {/* Chapter indicator */}
+          <div className="hidden sm:flex items-center gap-2 text-zinc-400">
+            <span className="text-zinc-200 font-bold">0{currentStage}</span>
+            <span className="text-zinc-600">/</span>
+            <span>04</span>
+          </div>
+
+          {/* Fast Skip to Content */}
+          <a
+            href="#about"
+            className="flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors"
+          >
+            <span className="text-[11px] uppercase tracking-wider">Skip to Content</span>
+            <ChevronDown size={14} />
+          </a>
+        </div>
+
+        {/* Bottom subtle progress line */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-zinc-900 z-30">
+          <motion.div
+            style={{ width: progressBarWidth }}
+            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500"
+          />
+        </div>
+
       </div>
     </section>
   );
 }
-

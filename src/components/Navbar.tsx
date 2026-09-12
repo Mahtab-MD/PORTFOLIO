@@ -1,5 +1,5 @@
 import { motion, useScroll, useMotionValueEvent } from 'motion/react';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, User, FolderGit2, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { useTheme } from '../hooks/use-theme';
 
@@ -9,37 +9,82 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    setIsScrolled(latest > 50);
+    setIsScrolled(latest > 30);
   });
 
   return (
     <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-        isScrolled 
-          ? 'bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800'
-          : 'bg-transparent'
-      }`}
+      className="fixed right-3 sm:right-5 top-1/2 -translate-y-1/2 z-50 pointer-events-none transition-all duration-300"
     >
-      <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="#home" className="text-xl font-bold tracking-tight">
-          MAHTAB<span className="text-blue-600 dark:text-blue-400">.exe</span>
+      <div
+        id="navbar-island"
+        className={`pointer-events-auto w-11 sm:w-12 py-3 px-1 rounded-full flex flex-col items-center justify-between gap-2 transition-all duration-300 ${
+          isScrolled
+            ? 'bg-zinc-950/75 dark:bg-zinc-950/80 backdrop-blur-2xl backdrop-saturate-180 border border-white/20 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.3),0_12px_36px_-6px_rgba(0,0,0,0.55)]'
+            : 'bg-zinc-950/45 dark:bg-zinc-950/50 backdrop-blur-xl backdrop-saturate-180 border border-white/15 dark:border-white/10 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.2),0_8px_24px_-4px_rgba(0,0,0,0.4)]'
+        }`}
+      >
+        {/* Top Logo Mark */}
+        <a 
+          href="#home" 
+          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono font-bold text-zinc-100 hover:text-white bg-white/10 hover:bg-blue-500/20 hover:border-blue-500/40 border border-white/15 transition-all group"
+          title="Home - Mahtab"
+          aria-label="Home"
+        >
+          <span>M</span>
         </a>
+
+        <div className="w-5 h-[1px] bg-white/15 my-0.5" />
         
-        <nav className="hidden md:flex items-center gap-8">
-          <a href="#about" className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">About</a>
-          <a href="#projects" className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">Projects</a>
-          <a href="#contact" className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">Contact</a>
+        {/* Slender Vertical Navigation Links */}
+        <nav className="flex flex-col items-center gap-1.5 w-full">
+          <a 
+            href="#about" 
+            className="w-full py-2 flex flex-col items-center justify-center rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-all group"
+            title="About"
+          >
+            <User size={13} className="group-hover:text-blue-400 group-hover:scale-110 transition-transform mb-1" />
+            <span className="[writing-mode:vertical-rl] text-[9px] font-mono tracking-widest uppercase text-zinc-400 group-hover:text-zinc-100">
+              ABOUT
+            </span>
+          </a>
+
+          <a 
+            href="#projects" 
+            className="w-full py-2 flex flex-col items-center justify-center rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-all group"
+            title="Projects"
+          >
+            <FolderGit2 size={13} className="group-hover:text-blue-400 group-hover:scale-110 transition-transform mb-1" />
+            <span className="[writing-mode:vertical-rl] text-[9px] font-mono tracking-widest uppercase text-zinc-400 group-hover:text-zinc-100">
+              PROJECT
+            </span>
+          </a>
+
+          <a 
+            href="#contact" 
+            className="w-full py-2 flex flex-col items-center justify-center rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-all group"
+            title="Contact"
+          >
+            <Mail size={13} className="group-hover:text-blue-400 group-hover:scale-110 transition-transform mb-1" />
+            <span className="[writing-mode:vertical-rl] text-[9px] font-mono tracking-widest uppercase text-zinc-400 group-hover:text-zinc-100">
+              CONTACT
+            </span>
+          </a>
         </nav>
 
+        <div className="w-5 h-[1px] bg-white/15 my-0.5" />
+
+        {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="p-2 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+          className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-zinc-200 border border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.2)] transition-all"
           aria-label="Toggle dark mode"
+          title="Toggle theme"
         >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+          {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
         </button>
       </div>
     </motion.header>
