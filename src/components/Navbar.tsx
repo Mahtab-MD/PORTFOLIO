@@ -63,19 +63,21 @@ function NavItem({ href, title, icon: Icon, text, mouseY, isActive }: { href: st
       onClick={(e) => handleLinkClick(e, href)}
       style={{ width, height }}
       className={`flex flex-col items-center justify-center rounded-2xl transition-colors group relative z-10 ${
-        isActive ? 'text-zinc-200' : 'text-zinc-400 hover:text-white hover:bg-white/10'
+        isActive 
+          ? 'text-zinc-900 dark:text-zinc-200' 
+          : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-900/5 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/10'
       }`}
     >
       {isActive && (
         <motion.div
           layoutId="activeNavDot"
-          className="absolute -left-1 w-1.5 h-1.5 rounded-full bg-blue-500"
+          className="absolute -left-1 w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-500"
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         />
       )}
       <motion.div style={{ scale }} className="flex flex-col items-center justify-center pointer-events-none">
-        <Icon size={14} className={`${isActive ? 'text-blue-500' : 'group-hover:text-blue-400'} transition-colors mb-1.5`} />
-        <span className={`[writing-mode:vertical-rl] text-[10px] font-mono tracking-widest uppercase ${isActive ? 'text-zinc-200' : 'group-hover:text-zinc-100'}`}>
+        <Icon size={14} className={`${isActive ? 'text-blue-600 dark:text-blue-500' : 'group-hover:text-blue-600 dark:group-hover:text-blue-400'} transition-colors mb-1.5`} />
+        <span className={`[writing-mode:vertical-rl] text-[10px] font-mono tracking-widest uppercase ${isActive ? 'text-zinc-900 dark:text-zinc-200' : 'group-hover:text-zinc-900 dark:group-hover:text-zinc-100'}`}>
           {text}
         </span>
       </motion.div>
@@ -109,8 +111,8 @@ export function Navbar() {
         onMouseLeave={() => mouseY.set(Infinity)}
         className={`pointer-events-auto w-auto py-3 px-1.5 rounded-[2rem] flex flex-col items-center justify-between gap-3 transition-all duration-300 ${
           isScrolled
-            ? 'bg-zinc-950/75 dark:bg-zinc-950/80 backdrop-blur-2xl backdrop-saturate-180 border border-white/20 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.3),0_12px_36px_-6px_rgba(0,0,0,0.55)]'
-            : 'bg-zinc-950/45 dark:bg-zinc-950/50 backdrop-blur-xl backdrop-saturate-180 border border-white/15 dark:border-white/10 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.2),0_8px_24px_-4px_rgba(0,0,0,0.4)]'
+            ? 'bg-white/70 dark:bg-zinc-950/80 backdrop-blur-2xl backdrop-saturate-180 border border-zinc-200/50 dark:border-white/15 shadow-[0_12px_36px_-6px_rgba(0,0,0,0.1)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.3),0_12px_36px_-6px_rgba(0,0,0,0.55)]'
+            : 'bg-white/40 dark:bg-zinc-950/50 backdrop-blur-xl backdrop-saturate-180 border border-zinc-200/30 dark:border-white/10 shadow-[0_8px_24px_-4px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.2),0_8px_24px_-4px_rgba(0,0,0,0.4)]'
         }`}
       >
         {/* Top Logo Mark */}
@@ -120,14 +122,14 @@ export function Navbar() {
             e.preventDefault();
             document.querySelector('#home')?.scrollIntoView({ behavior: 'smooth' });
           }}
-          className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-mono font-bold text-zinc-100 hover:text-white bg-white/10 hover:bg-blue-500/20 hover:border-blue-500/40 border border-white/15 transition-all group shrink-0"
+          className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-mono font-bold text-zinc-800 hover:text-zinc-900 dark:text-zinc-100 dark:hover:text-white bg-zinc-900/5 hover:bg-blue-600/10 dark:bg-white/10 dark:hover:bg-blue-500/20 border border-zinc-900/10 hover:border-blue-600/30 dark:border-white/15 dark:hover:border-blue-500/40 transition-all group shrink-0"
           title="Home - Mahtab"
           aria-label="Home"
         >
           <span>M</span>
         </a>
 
-        <div className="w-6 h-[1px] bg-white/15 shrink-0" />
+        <div className="w-6 h-[1px] bg-zinc-900/10 dark:bg-white/15 shrink-0" />
         
         {/* Slender Vertical Navigation Links with MacOS Magnification Effect */}
         <nav className="flex flex-col items-center gap-1.5 w-full shrink-0">
@@ -136,12 +138,12 @@ export function Navbar() {
           <NavItem href="#contact" title="Contact" icon={Mail} text="CONTACT" mouseY={mouseY} isActive={activeSection === 'contact'} />
         </nav>
 
-        <div className="w-6 h-[1px] bg-white/15 shrink-0" />
+        <div className="w-6 h-[1px] bg-zinc-900/10 dark:bg-white/15 shrink-0" />
 
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="w-11 h-11 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-zinc-200 border border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.2)] transition-all shrink-0"
+          className="w-11 h-11 rounded-full flex items-center justify-center bg-zinc-900/5 hover:bg-zinc-900/10 dark:bg-white/10 dark:hover:bg-white/20 text-zinc-600 hover:text-zinc-900 dark:text-zinc-200 border border-zinc-900/10 dark:border-white/15 shadow-sm dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.2)] transition-all shrink-0"
           aria-label="Toggle dark mode"
           title="Toggle theme"
         >
