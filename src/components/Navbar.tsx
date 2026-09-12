@@ -1,9 +1,35 @@
 import { motion, useScroll, useMotionValueEvent, useMotionValue, useTransform, useSpring } from 'motion/react';
 import { Moon, Sun, User, FolderGit2, Mail } from 'lucide-react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useTheme } from '../hooks/use-theme';
 
-function NavItem({ href, title, icon: Icon, text, mouseY }: { href: string, title: string, icon: any, text: string, mouseY: any }) {
+function useActiveSection(sectionIds: string[]) {
+  const [activeId, setActiveId] = useState<string>('');
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveId(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: '-40% 0px -40% 0px' }
+    );
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [sectionIds]);
+
+  return activeId;
+}
+
+function NavItem({ href, title, icon: Icon, text, mouseY, isActive }: { href: string, title: string, icon: any, text: string, mouseY: any, isActive: boolean }) {
   const ref = useRef<HTMLAnchorElement>(null);
 
   // Calculate distance from mouse to the center of this item
@@ -13,14 +39,10 @@ function NavItem({ href, title, icon: Icon, text, mouseY }: { href: string, titl
   });
 
   // Scale dimensions dynamically based on mouse distance for the macOS dock effect
-  // Base width is ~44px, expands to 60px
   const widthTransform = useTransform(distance, [-120, 0, 120], [44, 64, 44]);
-  // Base height is roughly 80px, expands to 110px
   const heightTransform = useTransform(distance, [-120, 0, 120], [85, 120, 85]);
-  // Scale the internal content
   const scaleTransform = useTransform(distance, [-120, 0, 120], [1, 1.3, 1]);
   
-  // Smooth the values using springs
   const width = useSpring(widthTransform, { mass: 0.1, stiffness: 250, damping: 20 });
   const height = useSpring(heightTransform, { mass: 0.1, stiffness: 250, damping: 20 });
   const scale = useSpring(scaleTransform, { mass: 0.1, stiffness: 250, damping: 20 });
@@ -40,11 +62,20 @@ function NavItem({ href, title, icon: Icon, text, mouseY }: { href: string, titl
       title={title}
       onClick={(e) => handleLinkClick(e, href)}
       style={{ width, height }}
-      className="flex flex-col items-center justify-center rounded-2xl text-zinc-400 hover:text-white hover:bg-white/10 transition-colors group relative z-10"
+      className={`flex flex-col items-center justify-center rounded-2xl transition-colors group relative z-10 ${
+        isActive ? 'text-zinc-200' : 'text-zinc-400 hover:text-white hover:bg-white/10'
+      }`}
     >
+      {isActive && (
+        <motion.div
+          layoutId="activeNavDot"
+          className="absolute -left-1 w-1.5 h-1.5 rounded-full bg-blue-500"
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        />
+      )}
       <motion.div style={{ scale }} className="flex flex-col items-center justify-center pointer-events-none">
-        <Icon size={14} className="group-hover:text-blue-400 transition-colors mb-1.5" />
-        <span className="[writing-mode:vertical-rl] text-[10px] font-mono tracking-widest uppercase group-hover:text-zinc-100">
+        <Icon size={14} className={`${isActive ? 'text-blue-500' : 'group-hover:text-blue-400'} transition-colors mb-1.5`} />
+        <span className={`[writing-mode:vertical-rl] text-[10px] font-mono tracking-widest uppercase ${isActive ? 'text-zinc-200' : 'group-hover:text-zinc-100'}`}>
           {text}
         </span>
       </motion.div>
@@ -57,6 +88,9 @@ export function Navbar() {
   const { scrollY } = useScroll();
   const [isScrolled, setIsScrolled] = useState(false);
   const mouseY = useMotionValue(Infinity);
+  
+  const sectionIds = useMemo(() => ['home', 'about', 'projects', 'contact'], []);
+  const activeSection = useActiveSection(sectionIds);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsScrolled(latest > 30);
@@ -97,9 +131,9 @@ export function Navbar() {
         
         {/* Slender Vertical Navigation Links with MacOS Magnification Effect */}
         <nav className="flex flex-col items-center gap-1.5 w-full shrink-0">
-          <NavItem href="#about" title="About" icon={User} text="ABOUT" mouseY={mouseY} />
-          <NavItem href="#projects" title="Projects" icon={FolderGit2} text="PROJECTS" mouseY={mouseY} />
-          <NavItem href="#contact" title="Contact" icon={Mail} text="CONTACT" mouseY={mouseY} />
+          <NavItem href="#about" title="About" icon={User} text="ABOUT" mouseY={mouseY} isActive={activeSection === 'about'} />
+          <NavItem href="#projects" title="Projects" icon={FolderGit2} text="PROJECTS" mouseY={mouseY} isActive={activeSection === 'projects'} />
+          <NavItem href="#contact" title="Contact" icon={Mail} text="CONTACT" mouseY={mouseY} isActive={activeSection === 'contact'} />
         </nav>
 
         <div className="w-6 h-[1px] bg-white/15 shrink-0" />
