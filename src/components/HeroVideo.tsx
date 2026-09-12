@@ -1,113 +1,70 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { motion, MotionValue, useMotionValueEvent, useTransform } from 'motion/react';
 
 interface HeroVideoProps {
   scrollYProgress: MotionValue<number>;
 }
 
-export function HeroVideo({ scrollYProgress }: HeroVideoProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const targetTimeRef = useRef(0);
-  const currentTimeRef = useRef(0);
-  const isSeekingRef = useRef(false);
-  const rafIdRef = useRef<number | null>(null);
-  const isIntersectingRef = useRef(true);
+const TOTAL_FRAMES = 192;
+const FRAME_BASE_URL = '/assets/';
 
+export function HeroVideo({ scrollYProgress }: HeroVideoProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [imagesLoaded, setImagesLoaded] = useState(0);
+  const imagesRef = useRef<HTMLImageElement[]>([]);
+  
   // Subtle cinematic scale & opacity response as scrolling progresses
   const videoScale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.025, 1.05]);
   const videoOpacity = useTransform(scrollYProgress, [0.88, 1], [1, 0.4]);
 
-  // Update target playback time strictly derived from scroll progress (0..1)
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    const video = videoRef.current;
-    if (!video || !video.duration || isNaN(video.duration)) return;
-
-    // Clamp progress safely
-    const clampedProgress = Math.max(0, Math.min(1, latest));
-    // Provide 0.05s buffer at the end to prevent video 'ended' freeze or jump
-    const maxUsableDuration = Math.max(0, video.duration - 0.05);
-    targetTimeRef.current = clampedProgress * maxUsableDuration;
-  });
-
-  // Smooth requestAnimationFrame lerp loop for jitter-free scrubbing forward & backward
+  // Preload images
   useEffect(() => {
-    let isCancelled = false;
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let loadedCount = 0;
+    const images: HTMLImageElement[] = [];
 
-    const tick = () => {
-      if (isCancelled) return;
-
-      if (!prefersReducedMotion && isIntersectingRef.current) {
-        const video = videoRef.current;
-        if (video && video.readyState >= 2 && video.duration && !isSeekingRef.current) {
-          const delta = targetTimeRef.current - currentTimeRef.current;
-
-          // Only seek when the delta is beyond threshold to prevent CPU thrashing
-          if (Math.abs(delta) > 0.008) {
-            // Responsive lerp coefficient for fluid scrolling
-            currentTimeRef.current += delta * 0.2;
-
-            try {
-              video.currentTime = currentTimeRef.current;
-            } catch {
-              // Ignore transient seeking errors during rapid scrolls
-            }
+    for (let i = 1; i <= TOTAL_FRAMES; i++) {
+      const img = new Image();
+      const frameNum = String(i).padStart(5, '0');
+      img.src = `${FRAME_BASE_URL}${frameNum}.jpg`;
+      img.onload = () => {
+        loadedCount++;
+        setImagesLoaded(loadedCount);
+        
+        // Render first frame immediately once it's loaded
+        if (i === 1 && canvasRef.current) {
+          const ctx = canvasRef.current.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, canvasRef.current.width, canvasRef.current.height);
           }
         }
-      }
-
-      rafIdRef.current = requestAnimationFrame(tick);
-    };
-
-    rafIdRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      isCancelled = true;
-      if (rafIdRef.current) {
-        cancelAnimationFrame(rafIdRef.current);
-      }
-    };
+      };
+      images[i] = img;
+    }
+    
+    imagesRef.current = images;
   }, []);
 
-  // Pause scrubbing loop when Hero is scrolled out of viewport
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+  // Set up canvas drawing on scroll
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    if (!canvasRef.current || imagesRef.current.length === 0) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isIntersectingRef.current = entry.isIntersecting;
-      },
-      { threshold: 0.02 }
-    );
+    // Calculate which frame to show based on scroll progress (0.0 -> 1.0)
+    // Clamp between 1 and TOTAL_FRAMES
+    const progress = Math.max(0, Math.min(1, latest));
+    let frameIndex = Math.floor(progress * TOTAL_FRAMES) + 1;
+    if (frameIndex > TOTAL_FRAMES) frameIndex = TOTAL_FRAMES;
 
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, []);
-
-  const handleLoadedMetadata = () => {
-    const video = videoRef.current;
-    if (video) {
-      setIsVideoLoaded(true);
-      video.pause();
-      const currentProg = Math.max(0, Math.min(1, scrollYProgress.get() || 0));
-      const maxUsableDuration = Math.max(0, video.duration - 0.05);
-      const initTime = currentProg * maxUsableDuration;
-      targetTimeRef.current = initTime;
-      currentTimeRef.current = initTime;
-      try {
-        video.currentTime = initTime;
-      } catch {
-        // Ignore seek error
+    const img = imagesRef.current[frameIndex];
+    if (img && img.complete) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        // Clear and draw exactly to the canvas coordinate size
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       }
     }
-  };
-
-  const handleError = () => {
-    setHasError(true);
-  };
+  });
 
   return (
     <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden select-none">
@@ -121,42 +78,29 @@ export function HeroVideo({ scrollYProgress }: HeroVideoProps) {
           scale: videoScale,
           opacity: videoOpacity,
         }}
-        className="absolute inset-0 w-full h-full lg:w-[70%] lg:left-[30%] xl:w-[68%] xl:left-[32%] overflow-hidden"
+        className="absolute inset-0 w-full h-full lg:w-[70%] lg:left-[30%] xl:w-[68%] xl:left-[32%] overflow-hidden bg-zinc-950"
       >
-        {!hasError ? (
-          <video
-            ref={videoRef}
-            src="/assets/hero.mp4"
-            poster="/assets/profile.png"
-            muted
-            playsInline
-            preload="auto"
-            autoPlay={false}
-            onLoadedMetadata={handleLoadedMetadata}
-            onSeeking={() => { isSeekingRef.current = true; }}
-            onSeeked={() => { isSeekingRef.current = false; }}
-            onError={handleError}
-            className={`w-full h-full object-cover object-[50%_35%] sm:object-[50%_36%] lg:object-[50%_38%] transition-opacity duration-700 ${
-              isVideoLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
-            style={{
-              willChange: 'transform',
-            }}
-          />
-        ) : (
-          /* Graceful Fallback if video file is missing or unreadable */
-          <img
-            src="/assets/profile.png"
-            alt="Mahtab Mohammad - Software Engineer"
-            className="w-full h-full object-cover object-[50%_36%]"
-          />
+        <canvas
+          ref={canvasRef}
+          width={1920}
+          height={1080}
+          className={`w-full h-full object-cover object-[50%_35%] sm:object-[50%_36%] lg:object-[50%_38%] transition-opacity duration-700 ${
+            imagesLoaded > 0 ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{
+            willChange: 'transform',
+          }}
+        />
+        
+        {/* Loading Indicator */}
+        {imagesLoaded < TOTAL_FRAMES && (
+          <div className="absolute top-4 right-4 text-xs font-mono text-zinc-500 bg-zinc-950/50 px-3 py-1 rounded-full backdrop-blur-md">
+            Buffering {Math.round((imagesLoaded / TOTAL_FRAMES) * 100)}%
+          </div>
         )}
 
         {/* ─────────────────────────────────────────────────────────────
             SEAMLESS CINEMATIC SCRIMS & GRADIENTS
-            - Left-to-Right Scrim: Gives left side 100% pure contrast for typography
-            - Top Scrim: Seamless integration with header / navbar
-            - Bottom Scrim: Smooth transition into next portfolio section
             ───────────────────────────────────────────────────────────── */}
 
         {/* Desktop Left-to-Right Gradient Scrim */}
